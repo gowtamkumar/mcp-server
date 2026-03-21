@@ -3,12 +3,18 @@ import {
   ResourceTemplate,
 } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import "dotenv/config";
 import express from "express";
 import { z } from "zod";
+import cors from "cors";
+// Set up Express and HTTP transport
+const app = express();
+app.use(express.json());
+app.use(cors());
 
 // Create an MCP server
 const server = new McpServer({
-  name: "demo-server",
+  name: "ecommerce-mcp-server",
   version: "1.0.0",
 });
 
@@ -27,7 +33,7 @@ server.registerTool(
       content: [{ type: "text", text: JSON.stringify(output) }],
       structuredContent: output,
     };
-  }
+  },
 );
 
 // Add a dynamic greeting resource
@@ -45,12 +51,8 @@ server.registerResource(
         text: `Hello, ${name}!`,
       },
     ],
-  })
+  }),
 );
-
-// Set up Express and HTTP transport
-const app = express();
-app.use(express.json());
 
 app.post("/mcp", async (req, res) => {
   // Create a new transport for each request to prevent request ID collisions
@@ -67,7 +69,7 @@ app.post("/mcp", async (req, res) => {
   await transport.handleRequest(req, res, req.body);
 });
 
-const port = parseInt(process.env.PORT || "3000");
+const port = parseInt(process.env.PORT || "3900");
 app
   .listen(port, () => {
     console.log(`Demo MCP Server running on http://localhost:${port}/mcp`);
